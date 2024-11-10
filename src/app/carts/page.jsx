@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 const getProductsData = async () => {
   try {
-    let response = await fetch(`http://localhost:3000/api/products/getProducts`);
+    let response = await fetch(`https://juniorsh0ppingsite.netlify.app/products/getProducts`);
     if (!response.ok) {
       toast.error("failed to fetch...");
     }

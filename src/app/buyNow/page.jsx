@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 const getProductsData = async () => {
   try {
     let response = await fetch(
-      `http://localhost:3000/api/products/getProducts`
+      `https://juniorsh0ppingsite.netlify.app/api/products/getProducts`
     );
     if (!response.ok) {
       toast.error("Failed to fetch...");
