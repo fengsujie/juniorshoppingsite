@@ -13,7 +13,6 @@ export async function connect() {
   try {
     await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 20000,
       socketTimeoutMS: 45000,
     });
