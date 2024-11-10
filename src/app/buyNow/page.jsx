@@ -51,7 +51,15 @@ const BuyNowPage = () => {
     queryFn: getProductsData,
   });
 
-  const buyProductId = localStorage.getItem("buyProduct");
+  // State to check if the component is mounted
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Ensure code only runs in the browser
+    setIsClient(true);
+  }, []);
+
+  const buyProductId = isClient ? localStorage.getItem("buyProduct") : null;
 
   useEffect(() => {
     if (data && buyProductId) {
@@ -110,6 +118,8 @@ const BuyNowPage = () => {
       toast.error("Order failed");
     }
   };
+
+  if (!isClient) return null; // Don't render the page until the component is mounted
 
   return (
     <div className="py-4">
