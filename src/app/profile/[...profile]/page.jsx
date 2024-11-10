@@ -10,8 +10,8 @@ const ProfilePage = () => {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showUserIcon, setShowUserIcon] = useState(false);
 
+  // Store user data in localStorage
   useEffect(() => {
     if (data) {
       localStorage.setItem("usersData", JSON.stringify(data));
@@ -25,7 +25,7 @@ const ProfilePage = () => {
         await axios.get("/api/users/logout");
         localStorage.removeItem("usersData");
         localStorage.removeItem("user");
-        toast.success("Logout successfully...");
+        toast.success("Logged out successfully...");
         router.push("/login");
       } catch (error) {
         toast.error(error.message);
@@ -37,7 +37,6 @@ const ProfilePage = () => {
     try {
       const res = await axios.post("/api/users/me");
       setData(res.data);
-      setShowUserIcon(true);
     } catch (error) {
       toast.error("Failed to fetch user data");
     }
@@ -196,38 +195,36 @@ const ProfilePage = () => {
           <h1 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
             Profile Page
           </h1>
-          {showUserIcon && (
+          {/* Show user icon after data is fetched */}
+          {data && (
             <FiUser className="text-5xl text-gray-900 dark:text-white mb-4" />
           )}
           <h2 className="text-2xl font-semibold mb-4">
             {data ? (
-              Object.keys(data).length === 0 ? (
-                "No data available"
-              ) : (
-                <p>{data.data.username}</p>
-              )
+              <p>{data.username || "No data available"}</p>
             ) : (
               "No data available"
             )}
           </h2>
+          {/* Render user details if data exists */}
           {data && (
             <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-4">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white text-center">
                 User Details
               </h3>
               <p className="text-gray-700 dark:text-gray-300">
-                <span className="font-bold">Email:</span> {data.data.email}
+                <span className="font-bold">Email:</span> {data.email || "N/A"}
               </p>
               <p className="text-gray-700 dark:text-gray-300">
-                <span className="font-bold">User ID:</span> {data.data._id}
+                <span className="font-bold">User ID:</span> {data._id || "N/A"}
               </p>
               <p className="text-gray-700 dark:text-gray-300">
                 <span className="font-bold">Admin:</span>{" "}
-                {data.data.isAdmin ? "Yes" : "No"}
+                {data.isAdmin ? "Yes" : "No"}
               </p>
               <p className="text-gray-700 dark:text-gray-300">
                 <span className="font-bold">Verified:</span>{" "}
-                {data.data.isVerified ? "Yes" : "No"}
+                {data.isVerified ? "Yes" : "No"}
               </p>
             </div>
           )}
