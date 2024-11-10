@@ -9,9 +9,7 @@ import { useRouter } from "next/navigation";
 
 const getProductsData = async () => {
   try {
-    let response = await fetch(
-      `http://localhost:3000/api/products/getProducts`
-    );
+    let response = await fetch(`http://localhost:3000/api/products/getProducts`);
     if (!response.ok) {
       toast.error("failed to fetch...");
     }
@@ -26,18 +24,30 @@ const getProductsData = async () => {
 const Cart = () => {
   const router = useRouter();
   const [specificProduct, setSpecificProduct] = useState({});
+  const [isClient, setIsClient] = useState(false); // Track if we are on the client side
 
   const { isLoading, error, data, isFetching } = useQuery({
     queryKey: ["getProducts"],
     queryFn: getProductsData,
   });
 
-  const cartItem = localStorage.getItem("cart");
+  // Set up effect to only run on the client side
+  useEffect(() => {
+    setIsClient(true); // This ensures we are on the client side
+  }, []);
+
+  // Get cart data only if on client side
+  const [cartItem, setCartItem] = useState(null);
+  useEffect(() => {
+    if (isClient) {
+      const cart = localStorage.getItem("cart");
+      setCartItem(cart);
+    }
+  }, [isClient]);
+
   useEffect(() => {
     if (data && cartItem) {
-      const foundProduct = data.results.find(
-        (product) => product._id === cartItem
-      );
+      const foundProduct = data.results.find((product) => product._id === cartItem);
       if (foundProduct) {
         setSpecificProduct(foundProduct);
       }
@@ -46,9 +56,10 @@ const Cart = () => {
 
   // quantity
   const [productquantity, setProductQuantity] = useState(1);
+
   // increase quantity button event
   const increaseQuantity = () => {
-    setProductQuantity(() => productquantity + 1);
+    setProductQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   // decrease quantity button event
@@ -56,13 +67,14 @@ const Cart = () => {
     if (productquantity === 1) {
       toast.error("item quantity can't be less than 1");
     } else {
-      setProductQuantity(() => productquantity - 1);
+      setProductQuantity((prevQuantity) => prevQuantity - 1);
     }
   };
 
   // delete button click event
   const deleteProduct = () => {
     localStorage.removeItem("cart");
+    setCartItem(null); // Clear cart item from state
   };
 
   // buy now button click event
@@ -86,6 +98,7 @@ const Cart = () => {
   if (isLoading) return "Loading...";
 
   if (error) return "Error occurred: " + error.message;
+
   return (
     <div className="container mx-auto p-2">
       {specificProduct ? (
@@ -118,9 +131,7 @@ const Cart = () => {
               <h3 className="text-lg sm:text-2xl font-bold">
                 ${specificProduct.price}
               </h3>
-              <p className="text-green-400">
-                {specificProduct.availabilityStatus}
-              </p>
+              <p className="text-green-400">{specificProduct.availabilityStatus}</p>
               <div>
                 <p className="text-base sm:text-xl text-center">
                   Quantity:{" "}
